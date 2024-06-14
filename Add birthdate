@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Validation</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .form-box {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            width: 400px;
+        }
+        .form-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .form-row label {
+            flex: 1;
+            margin-right: 10px;
+        }
+        .form-row input, .form-row select {
+            flex: 2;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-box button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .form-box button:hover {
+            background-color: #45a049;
+        }
+        .form-row-full {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-box">
+        <form id="registrationForm">
+            <div class="form-row">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username">
+            </div>
+            
+            <div class="form-row">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password">
+            </div>
+
+            <div class="form-row-full">
+                <label for="birthdate">Birthdate:</label>
+                <div class="form-row">
+                    <select id="month" name="month"></select>
+                    <select id="day" name="day"></select>
+                    <select id="year" name="year"></select>
+                </div>
+            </div>
+
+            <button type="submit">Register</button>
+        </form>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Populate month dropdown
+            const months = [
+                {name: 'January', days: 31},
+                {name: 'February', days: 28},
+                {name: 'March', days: 31},
+                {name: 'April', days: 30},
+                {name: 'May', days: 31},
+                {name: 'June', days: 30},
+                {name: 'July', days: 31},
+                {name: 'August', days: 31},
+                {name: 'September', days: 30},
+                {name: 'October', days: 31},
+                {name: 'November', days: 30},
+                {name: 'December', days: 31}
+            ];
+
+            months.forEach((month, index) => {
+                $('#month').append(`<option value="${index}">${month.name}</option>`);
+            });
+
+            // Populate year dropdown
+            const currentYear = new Date().getFullYear();
+            for (let year = 1975; year <= currentYear; year++) {
+                $('#year').append(`<option value="${year}">${year}</option>`);
+            }
+
+            // Populate day dropdown based on selected month and year
+            function populateDays() {
+                const selectedMonth = $('#month').val();
+                const selectedYear = $('#year').val();
+                let days = months[selectedMonth].days;
+
+                // Check for leap year if February is selected
+                if (selectedMonth == 1 && ((selectedYear % 4 == 0 && selectedYear % 100 != 0) || selectedYear % 400 == 0)) {
+                    days = 29;
+                }
+
+                $('#day').empty();
+                for (let day = 1; day <= days; day++) {
+                    $('#day').append(`<option value="${day}">${day}</option>`);
+                }
+            }
+
+            $('#month, #year').change(populateDays);
+            populateDays(); // Initial population
+
+            // Form validation on submission
+            $('#registrationForm').submit(function(e) {
+                e.preventDefault();
+
+                const username = $('#username').val().trim();
+                const password = $('#password').val().trim();
+                let isValid = true;
+
+                if (!username || !password) {
+                    alert('Username and Password cannot be empty.');
+                    isValid = false;
+                } else if (password.length < 6) {
+                    alert('Password should be at least 6 characters long.');
+                    isValid = false;
+                } else if (password.charAt(1) !== 'W' || !/\d/.test(password.charAt(3))) {
+                    alert('Password\'s 2nd character should be "W" and 4th character should be a number.');
+                    isValid = false;
+                }
+
+                if (isValid) {
+                    alert('Registration successful.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
