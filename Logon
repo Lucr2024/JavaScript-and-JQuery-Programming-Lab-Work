@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Validation</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <form id="registrationForm">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username"><br><br>
+        
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password"><br><br>
+        
+        <label for="month">Month:</label>
+        <select id="month" name="month">
+            <!-- Options will be populated by JavaScript -->
+        </select><br><br>
+        
+        <label for="day">Day:</label>
+        <select id="day" name="day">
+            <!-- Options will be populated by JavaScript -->
+        </select><br><br>
+        
+        <label for="year">Year:</label>
+        <select id="year" name="year">
+            <!-- Options will be populated by JavaScript -->
+        </select><br><br>
+        
+        <button type="submit">Register</button>
+    </form>
+
+    <script>
+        $(document).ready(function() {
+            // Populate month dropdown
+            const months = [
+                {name: 'January', days: 31},
+                {name: 'February', days: 28},
+                {name: 'March', days: 31},
+                {name: 'April', days: 30},
+                {name: 'May', days: 31},
+                {name: 'June', days: 30},
+                {name: 'July', days: 31},
+                {name: 'August', days: 31},
+                {name: 'September', days: 30},
+                {name: 'October', days: 31},
+                {name: 'November', days: 30},
+                {name: 'December', days: 31}
+            ];
+
+            months.forEach((month, index) => {
+                $('#month').append(`<option value="${index}">${month.name}</option>`);
+            });
+
+            // Populate year dropdown
+            const currentYear = new Date().getFullYear();
+            for (let year = 1975; year <= currentYear; year++) {
+                $('#year').append(`<option value="${year}">${year}</option>`);
+            }
+
+            // Populate day dropdown based on selected month and year
+            function populateDays() {
+                const selectedMonth = $('#month').val();
+                const selectedYear = $('#year').val();
+                let days = months[selectedMonth].days;
+
+                // Check for leap year if February is selected
+                if (selectedMonth == 1 && ((selectedYear % 4 == 0 && selectedYear % 100 != 0) || selectedYear % 400 == 0)) {
+                    days = 29;
+                }
+
+                $('#day').empty();
+                for (let day = 1; day <= days; day++) {
+                    $('#day').append(`<option value="${day}">${day}</option>`);
+                }
+            }
+
+            $('#month, #year').change(populateDays);
+            populateDays(); // Initial population
+
+            // Form validation on submission
+            $('#registrationForm').submit(function(e) {
+                e.preventDefault();
+
+                const username = $('#username').val().trim();
+                const password = $('#password').val().trim();
+                let isValid = true;
+
+                if (!username || !password) {
+                    alert('Username and Password cannot be empty.');
+                    isValid = false;
+                } else if (password.length < 6) {
+                    alert('Password should be at least 6 characters long.');
+                    isValid = false;
+                } else if (password.charAt(1) !== 'W' || !/\d/.test(password.charAt(3))) {
+                    alert('Password\'s 2nd character should be "W" and 4th character should be a number.');
+                    isValid = false;
+                }
+
+                if (isValid) {
+                    alert('Registration successful.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
